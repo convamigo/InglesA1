@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prática de Conversa</title>
+  <style>
+    /* Global resets */
+    html, body { height: 100%; width: 100%; margin: 0; display: flex; justify-content: center; align-items: center; background: #ece5dd; }
+
+    /* 16:9 container */
+    #container {
+      position: relative;
+      width: 90vw;
+      max-width: calc(90vh * (16/9));
+      aspect-ratio: 16/9;
+      min-width: 1280px;
+      min-height: 720px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Start screen */
+    #startScreen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255,255,255,0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+    #startScreen h1 { font-size: 2rem; margin-bottom: 1rem; }
+    #startScreen p { text-align: center; margin-bottom: 2rem; }
+    #startBtn { padding: 0.8rem 1.2rem; border: none; border-radius: 12px; background: #34b7f1; color: #fff; font-size: 1rem; cursor: pointer; }
+
+    /* Stage and controls */
+    #stage { flex: 1; padding: 1rem; overflow-y: auto; display: none; flex-direction: column; }
+    #controls { height: 3rem; padding: 0.6rem; background: #f0f0f0; display: none; }
+    #nextBtn { width: 100%; height: 100%; border: none; border-radius: 12px; background: #34b7f1; color: #fff; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    #nextBtn:disabled { background: #aaa; cursor: default; }
+
+    /* Bubbles */
+    .bubble { max-width: 75%; padding: 0.8rem 1rem; margin: 0.5rem 0; border-radius: 18px; opacity: 0; transform: translateY(20px); animation: fadeUp 0.4s forwards; }
+    .incoming { background: #e5e5e5; align-self: flex-start; }
+    .outgoing { background: #cceeff; align-self: flex-end; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    /* Questions */
+    .question { background: #f5f5f5; padding: 1rem; border-radius: 12px; margin: 0.5rem 0; opacity: 0; transform: scale(0.9); animation: scaleIn 0.4s forwards; }
+    @keyframes scaleIn { to { opacity: 1; transform: scale(1); } }
+    .question-text { font-weight: bold; margin-bottom: 0.5rem; }
+    .options { display: flex; flex-direction: column; gap: 0.5rem; }
+    .option-box { padding: 1rem; border: 1px solid #ccc; border-radius: 10px; background: #fff; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+    .option-box:hover { background: #e1f5fe; border-color: #34b7f1; }
+    .option-box.selected { background: #e1f5fe; border-color: #34b7f1; }
+    .option-box.correct { background: #c8e6c9; border-color: #2e7d32; }
+    .option-box.incorrect { background: #ffcdd2; border-color: #c62828; }
+    .submit-btn { margin-top: 0.5rem; width: 100%; padding: 0.8rem; border: none; border-radius: 12px; background: #34b7f1; color: #fff; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    .submit-btn:disabled { background: #aaa; cursor: default; }
+
+    /* Matching */
+    .match { background: #f5f5f5; padding: 1rem; border-radius: 12px; margin: 0.5rem 0; display: flex; justify-content: space-between; }
+    .column { display: flex; flex-direction: column; width: 48%; }
+    .pt-item, .en-item { padding: 0.8rem; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 8px; margin: 0.3rem 0; background: #fff; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+    .pt-item.selected-pair, .en-item.selected-pair { background: #e1f5fe; border-color: #34b7f1; }
+    .pt-item.matched, .en-item.matched { background: #c8e6c9; border-color: #2e7d32; color: #2e7d32; cursor: default; }
+    .pt-item.incorrect-match, .en-item.incorrect-match { background: #ffcdd2; border-color: #c62828; }
+
+    /* Final screen overlay */
+    #finalScreen { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); display:none; flex-direction: column; justify-content:center; align-items:center; padding:2rem; }
+    #finalScreen.active { display:flex; }
+    #finalScreen h1 { font-size:2rem; margin-bottom:1rem; }
+    #finalScreen ul { text-align:left; margin:1rem 0; }
+    #finalScreen button { margin-top:1rem; padding:0.8rem 1.2rem; border:none; border-radius:12px; background:#34b7f1; color:#fff; font-size:1rem; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <!-- Start Screen -->
+    <div id="startScreen">
+      <h1>Prática de Conversa</h1>
+      <p>Leia as falas, responda às perguntas e faça o exercício de correspondência no final.</p>
+      <button id="startBtn">Começar</button>
+    </div>
+    <!-- Main Stage -->
+    <div id="stage"></div>
+    <div id="controls"><button id="nextBtn">Próximo</button></div>
+    <!-- Final Screen -->
+    <div id="finalScreen">
+      <h1 id="finalTitle"></h1>
+      <p id="finalScore"></p>
+      <ul id="mistakeList"></ul>
+      <button id="restartBtn">Reiniciar</button>
+    </div>
+  </div>
+  <script>
+    const content = [
+      {type:'line',speaker:1,text:'Hello!'},
+      {type:'line',speaker:2,text:'Good morning!'},
+      {type:'question',id:1,text_pt:'Em que momento do dia essa conversa acontece?',options:[
+        {text_pt:'Manhã',correct:true},{text_pt:'Tarde',correct:false},{text_pt:'Noite',correct:false}
+      ]},
+      {type:'line',speaker:1,text:'How are you?'},
+      {type:'line',speaker:2,text:"I'm doing well. How are you?"},
+      {type:'line',speaker:1,text:"I'm doing well too."},
+      {type:'line',speaker:2,text:'What is your name?'},
+      {type:'line',speaker:1,text:'My name is Rose. What is your name?'},
+      {type:'line',speaker:2,text:'My name is James. Where are you from?'},
+      {type:'line',speaker:1,text:'I am from London. I am British. What about you?'},
+      {type:'line',speaker:2,text:'I am from New York. I am American.'},
+      {type:'question',id:2,text_pt:'Rose e James são do mesmo país?',options:[
+        {text_pt:'Sim, mas moram em cidades diferentes.',correct:false},
+        {text_pt:'Não, Rose é do Reino Unido e James é dos Estados Unidos.',correct:true},
+        {text_pt:'Não, Rose é dos Estados Unidos e James é do Reino Unido.',correct:false}
+      ]},
+      {type:'line',speaker:1,text:'Nice to meet you!'},
+      {type:'line',speaker:2,text:'Nice to meet you too! See you later!'},
+      {type:'match',pairs:[
+        {en:'good morning',pt:'bom dia'},{en:'too',pt:'também'},{en:'to meet',pt:'conhecer'},{en:'name',pt:'nome'},{en:'well',pt:'bem'}
+      ]}
+    ];
+
+    const totalItems = content.filter(i => i.type==='question').length + (content.find(i=>i.type==='match').pairs||[]).length;
+    let score=0, mistakes=[];
+    const stage=document.getElementById('stage'), startScreen=document.getElementById('startScreen');
+    const controls=document.getElementById('controls'), nextBtn=document.getElementById('nextBtn');
+    const finalScreen=document.getElementById('finalScreen'), finalTitle=document.getElementById('finalTitle');
+    const finalScore=document.getElementById('finalScore'), mistakeList=document.getElementById('mistakeList');
+    const startBtn=document.getElementById('startBtn'), restartBtn=document.getElementById('restartBtn');
+    let index=0;
+
+    startBtn.onclick = () => { startScreen.style.display='none'; stage.style.display='flex'; controls.style.display='block'; render(); };
+    restartBtn.onclick = () => location.reload();
+
+    function addBubble(text,speaker){
+      const d=document.createElement('div'); d.className='bubble '+(speaker===1?'outgoing':'incoming'); d.textContent=text;
+      stage.appendChild(d); stage.scrollTop=stage.scrollHeight;
+    }
+
+    function showFinal(){
+      const pct=Math.round(score/totalItems*100);
+      finalTitle.textContent=pct>=80?'Parabéns!':'Tente novamente!';
+      finalScore.textContent=`Você acertou ${score} de ${totalItems} (${pct}%)`;
+      mistakes.forEach(m=>{ const li=document.createElement('li'); li.textContent=m; mistakeList.appendChild(li); });
+      finalScreen.classList.add('active');
+    }
+
+    function render(){
+      if(index>=content.length){ showFinal(); nextBtn.disabled=true; return; }
+      const it=content[index];
+      if(it.type==='line'){
+        addBubble(it.text,it.speaker);
+        nextBtn.disabled=false;
+      } else if(it.type==='question'){
+        nextBtn.disabled=true;
+        const q=document.createElement('div'); q.className='question';
+        const qt=document.createElement('div'); qt.className='question-text'; qt.textContent=it.text_pt; q.appendChild(qt);
+        const odiv=document.createElement('div'); odiv.className='options'; let sel=null;
+        it.options.forEach((op,i)=>{
+          const ob=document.createElement('div'); ob.className='option-box'; ob.textContent=op.text_pt;
+          ob.onclick=()=>{ odiv.querySelectorAll('.option-box').forEach(e=>e.classList.remove('selected')); sel=i; ob.classList.add('selected'); };
+          odiv.appendChild(ob);
+        }); q.appendChild(odiv);
+        const btn=document.createElement('button'); btn.className='submit-btn'; btn.textContent='Enviar';
+        btn.onclick=()=>{
+          if(sel===null) return;
+          odiv.querySelectorAll('.option-box').forEach((ob,i)=>{
+            if(it.options[i].correct) ob.classList.add('correct');
+            else if(i===sel) ob.classList.add('incorrect');
+          });
+          if(!it.options[sel].correct) mistakes.push(`Pergunta: ${it.text_pt} - escolhido: ${it.options[sel].text_pt} | correto: ${it.options.find(o=>o.correct).text_pt}`);
+          else score++;
+          btn.disabled=true;
+          setTimeout(() => { index++; render(); }, 1200);
+        };
+        q.appendChild(btn);
+        stage.appendChild(q);
+        stage.scrollTop=stage.scrollHeight;
+      } else if(it.type==='match'){
+        nextBtn.disabled=true;
+        const mdiv=document.createElement('div'); mdiv.className='match';
+        const l=document.createElement('div'); l.className='column';
+        const r=document.createElement('div'); r.className='column';
+        const prs=it.pairs||[];
+        const sh=prs.map(p=>p.en).sort(()=>Math.random()-0.5);
+        prs.forEach((p,i)=>{ const pt=document.createElement('div'); pt.className='pt-item'; pt.textContent=p.pt; pt.dataset.idx=i; l.appendChild(pt); });
+        sh.forEach(txt=>{ const en=document.createElement('div'); en.className='en-item'; en.textContent=txt; r.appendChild(en); });
+        mdiv.appendChild(l); mdiv.appendChild(r);
+        stage.appendChild(mdiv); stage.scrollTop=stage.scrollHeight;
+        let seli=null, mcount=0;
+        l.querySelectorAll('.pt-item').forEach(el=>el.onclick=()=>{
+          if(el.classList.contains('matched')) return;
+          l.querySelectorAll('.pt-item').forEach(e=>e.classList.remove('selected-pair'));
+          el.classList.add('selected-pair'); seli=+el.dataset.idx;
+        });
+        r.querySelectorAll('.en-item').forEach(el=>el.onclick=()=>{
+          if(seli===null||el.classList.contains('matched')) return;
+          const pr=prs[seli];
+          if(el.textContent===pr.en){
+            l.querySelector(`.pt-item[data-idx='${seli}']`).classList.add('matched');
+            el.classList.add('matched');
+            score++; mcount++; seli=null;
+            l.querySelectorAll('.pt-item').forEach(e=>e.classList.remove('selected-pair'));
+            if(mcount===prs.length) setTimeout(()=>{ index++; render(); }, 1000);
+          } else {
+            l.querySelector(`.pt-item[data-idx='${seli}']`).classList.add('incorrect-match');
+            el.classList.add('incorrect-match');
+            mistakes.push(`Palavra: ${prs[seli].pt} com ${el.textContent}`);
+            setTimeout(()=>{
+              l.querySelector(`.pt-item[data-idx='${seli}']`).classList.remove('incorrect-match');
+              el.classList.remove('incorrect-match');
+            }, 800);
+          }
+        });
+      }
+      nextBtn.onclick=()=>{ index++; render(); };
+    }
+    // Initialization only after start
+    // render() is called when user clicks "Começar"
+    // No automatic render at load
+  
+  </script>
+</body>
+</html>
