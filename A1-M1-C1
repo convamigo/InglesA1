@@ -1,0 +1,125 @@
+[
+  {
+    "type": "line",
+    "speaker": 1,
+    "text": "Hello!"
+  },
+  {
+    "type": "line",
+    "speaker": 2,
+    "text": "Good morning!"
+  },
+  {
+    "type": "question",
+    "id": 1,
+    "text_pt": "Em que momento do dia essa conversa acontece?",
+    "options": [
+      {
+        "text_pt": "Manhã",
+        "correct": true
+      },
+      {
+        "text_pt": "Tarde",
+        "correct": false
+      },
+      {
+        "text_pt": "Noite",
+        "correct": false
+      }
+    ]
+  },
+  {
+    "type": "line",
+    "speaker": 1,
+    "text": "How are you?"
+  },
+  {
+    "type": "line",
+    "speaker": 2,
+    "text": "I'm doing well. How are you?"
+  },
+  {
+    "type": "line",
+    "speaker": 1,
+    "text": "I'm doing well too."
+  },
+  {
+    "type": "line",
+    "speaker": 2,
+    "text": "What is your name?"
+  },
+  {
+    "type": "line",
+    "speaker": 1,
+    "text": "My name is Rose. What is your name?"
+  },
+  {
+    "type": "line",
+    "speaker": 2,
+    "text": "My name is James. Where are you from?"
+  },
+  {
+    "type": "line",
+    "speaker": 1,
+    "text": "I am from London. I am British. What about you?"
+  },
+  {
+    "type": "line",
+    "speaker": 2,
+    "text": "I am from New York. I am American."
+  },
+  {
+    "type": "question",
+    "id": 2,
+    "text_pt": "Rose e James são do mesmo país?",
+    "options": [
+      {
+        "text_pt": "Sim, mas moram em cidades diferentes.",
+        "correct": false
+      },
+      {
+        "text_pt": "Não, Rose é do Reino Unido e James é dos Estados Unidos.",
+        "correct": true
+      },
+      {
+        "text_pt": "Não, Rose é dos Estados Unidos e James é do Reino Unido.",
+        "correct": false
+      }
+    ]
+  },
+  {
+    "type": "line",
+    "speaker": 1,
+    "text": "Nice to meet you!"
+  },
+  {
+    "type": "line",
+    "speaker": 2,
+    "text": "Nice to meet you too! See you later!"
+  },
+  {
+    "type": "match",
+    "pairs": [
+      {
+        "en": "good morning",
+        "pt": "bom dia"
+      },
+      {
+        "en": "too",
+        "pt": "também"
+      },
+      {
+        "en": "to meet",
+        "pt": "conhecer"
+      },
+      {
+        "en": "name",
+        "pt": "nome"
+      },
+      {
+        "en": "well",
+        "pt": "bem"
+      }
+    ]
+  }
+]
