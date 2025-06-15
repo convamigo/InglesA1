@@ -3,4 +3,9 @@
   { "pt": "a mulher", "en": "the woman" },
   { "pt": "o menino", "en": "the boy" },
   { "pt": "a menina", "en": "the girl" },
+  { "pt": "a pessoa", "en": "the person" },
+  { "pt": "o animal", "en": "the animal" },
+  { "pt": "o país", "en": "the country" },
+  { "pt": "o nome", "en": "the name" },
+  { "pt": "o professor / a professora", "en": "the teacher" },
 ]
