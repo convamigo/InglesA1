@@ -1,0 +1,10 @@
+[
+  { "pt": "eu", "en": "I" },
+  { "pt": "você", "en": "you (singular)" },
+  { "pt": "ele", "en": "he" },
+  { "pt": "ela", "en": "she" },
+  { "pt": "ele / ela (neutral)", "en": "it" },
+  { "pt": "nós", "en": "we" },
+  { "pt": "vocês", "en": "you (plural)" },
+  { "pt": "eles / elas", "en": "they" },
+]
